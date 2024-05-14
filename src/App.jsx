@@ -1,77 +1,21 @@
-import { useEffect, useState } from "react";
 import Guitar from "./components/Guitar";
 import Header from "./components/Header";
-import { db } from "./data/db";
+import useCart from "./hooks/useCart";
 
 function App() {
   // const [auth, setAuth] = useState(false);
   // const [total, setTotal] = useState(0);
-  const initialCart = () => {
-    const localStorageCart = localStorage.getItem("cart");
-    return localStorageCart ? JSON.parse(localStorageCart) : [];
-  };
-  const [data] = useState(db);
-  const [cart, setCart] = useState(initialCart);
-
-  const MAX_ITEMS = 5;
-  const MIN_ITEMS = 1;
-  // useEffect(() => {
-  //   setData(db);
-  // }, []);
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  function addToCart(item) {
-    const itemsExists = cart.findIndex((guitar) => guitar.id === item.id);
-    // console.log("item?", item);
-    if (itemsExists >= 0) {
-      if (cart.length >= MAX_ITEMS) return;
-      //Ya existe en el carrito
-      const updatedCart = [...cart];
-      updatedCart[itemsExists].quantity++;
-      console.log("Ya existe...");
-      setCart(updatedCart);
-    } else {
-      item.quantity = 1;
-      setCart([...cart, item]);
-    }
-  }
-  function removeFromCart(id) {
-    // console.log("eliminando...", id);
-    setCart((prevCart) => prevCart.filter((guitar) => guitar.id !== id));
-  }
-
-  function decreaseQuantity(id) {
-    // console.log("decrementando...", id);
-    const updatedCart = cart.map((item) => {
-      // console.log("item.id", item.id);
-      if (item.id === id && item.quantity > MIN_ITEMS) {
-        return { ...item, quantity: item.quantity - 1 };
-      }
-      return item;
-    });
-    // console.log("objeto retornado", updatedCart);
-    setCart(updatedCart);
-  }
-  function increaseQuantity(id) {
-    // console.log("id", id);
-    // console.log("incrementando", id);
-    // console.log("objetoInicial", cart);
-    const updatedCart = cart.map((item) => {
-      // console.log("item.id", item.id);
-      if (item.id === id && item.quantity < MAX_ITEMS) {
-        return { ...item, quantity: item.quantity + 1 };
-      }
-      return item;
-    });
-    // console.log("objeto retornado", updatedCart);
-    setCart(updatedCart);
-  }
-
-  function clearCart() {
-    setCart([]);
-  }
+  const {
+    data,
+    cart,
+    addToCart,
+    removeFromCart,
+    decreaseQuantity,
+    increaseQuantity,
+    clearCart,
+    isEmpty,
+    cartTotal,
+  } = useCart();
 
   return (
     <>
@@ -81,6 +25,8 @@ function App() {
         decreaseQuantity={decreaseQuantity}
         increaseQuantity={increaseQuantity}
         clearCart={clearCart}
+        isEmpty={isEmpty}
+        cartTotal={cartTotal}
       />
 
       <main className="container-xl mt-5">
@@ -91,7 +37,7 @@ function App() {
             <Guitar
               key={guitar.id}
               guitar={guitar}
-              setCart={setCart}
+              // setCart={setCart}
               addToCart={addToCart}
             />
           ))}
