@@ -29,7 +29,7 @@ const useCart = () => {
     const itemsExists = cart.findIndex((guitar) => guitar.id === item.id);
     // console.log("item?", item);
     if (itemsExists >= 0) {
-      if (cart.length >= MAX_ITEMS) return;
+      if (cart[itemsExists].quantity >= MAX_ITEMS) return;
       //Ya existe en el carrito
       const updatedCart = [...cart];
       updatedCart[itemsExists].quantity++;
